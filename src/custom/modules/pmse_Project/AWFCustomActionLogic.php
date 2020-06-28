@@ -18,7 +18,7 @@ SugarAutoLoader::load('custom/modules/pmse_Project/AWFCustomAction.php');
 
 class AWFCustomActionLogic extends AWFCustomAction
 {
-    public $availableMethods = array(
+    public $availableClasses = array(
         'Accounts' => array(
             'customMethodWithOriginalUserOverride',
             'Sugarcrm\\Sugarcrm\\custom\\modules\\pmse_Project\\SampleCustomAction',
