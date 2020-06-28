@@ -21,13 +21,23 @@ class AWFCustomActionLogic extends AWFCustomAction
     public $availableMethods = array(
         'Accounts' => array(
             'customMethodWithOriginalUserOverride',
-            'normalCustomMethod1',
+            'Sugarcrm\\Sugarcrm\\custom\\modules\\pmse_Project\\SampleCustomAction',
         ),
         'Contacts' => array(
-            'contactsCustomMethod1',
+            'Sugarcrm\\Sugarcrm\\custom\\modules\\pmse_Project\\SampleCustomAction2',
         )
     );
 
+    /**
+     * Only for reference and historical purposes. The re-vamped implementation
+     * of the AWF Custom Action method would require a new class to be implemented
+     * having a static "execute" method and the detail of the implementation within that
+     * class.
+     * @param $b
+     * @param $user
+     * @param $additional_info
+     * @return bool
+     */
     public function customMethodWithOriginalUserOverride($b, $user, $additional_info)
     {
         // call to impersonate the user
@@ -41,17 +51,4 @@ class AWFCustomActionLogic extends AWFCustomAction
         return true;
     }
 
-    public function normalCustomMethod1($b, $user, $additional_info)
-    {
-        $GLOBALS['log']->fatal('called normalCustomMethod1');
-
-        return true;
-    }
-
-    public function contactsCustomMethod1($b, $user, $additional_info)
-    {
-        $GLOBALS['log']->fatal('called contactsCustomMethod1');
-
-        return true;
-    }
 }
