@@ -8,13 +8,19 @@
 
 class AWFCustomAction
 {
-    public $availableMethods = array();
+    public $availableClasses = array();
     public $previousUser;
 
-    public function methodExists($method, $module)
+    /**
+     * @param $fqcn string The fully Qualified Class Name to check for.
+     * @param $module string the name of the module that the fully-qualified-class-name should
+     * be defined under.
+     * @return bool
+     */
+    public function classIsDefined($fqcn, $module)
     {
-        if (!empty($method) && !empty($module) && !empty($this->availableMethods[$module])) {
-            if (in_array($method, $this->availableMethods[$module]) && method_exists($this, $method)) {
+        if (!empty($fqcn) && !empty($module) && !empty($this->availableClasses[$module])) {
+            if (in_array($fqcn, $this->availableClasses[$module])) {
                 return true;
             }
         }
@@ -23,8 +29,8 @@ class AWFCustomAction
 
     public function getAvailableModulesApis()
     {
-        if (!empty($this->availableMethods)) {
-            return array_keys($this->availableMethods);
+        if (!empty($this->availableClasses)) {
+            return array_keys($this->availableClasses);
         }
     
         return array();
@@ -41,14 +47,12 @@ class AWFCustomAction
             'result' => array(),
         );
 
-        if (!empty($this->availableMethods) && !empty($this->availableMethods[$module])) {
-            foreach ($this->availableMethods[$module] as $method) {
-                if (method_exists($this, $method)) {
-                    $response['result'][] = array(
-                        'value' => $method,
-                        'text' => $method,
-                    );
-                }
+        if (!empty($this->availableClasses) && !empty($this->availableClasses[$module])) {
+            foreach ($this->availableClasses[$module] as $method) {
+                $response['result'][] = array(
+                    'value' => $method,
+                    'text' => $method,
+                );
             }
     
             return $response;            
@@ -100,7 +104,15 @@ class AWFCustomAction
         return false;
     }
 
-    public function callCustomLogic(SugarBean $b, $method, $additional_info)
+    /**
+     * Calls static "execute" method on the passed in $namespacedClass
+     * @param SugarBean $b
+     * @param string $namespacedClass
+     * @param array $additional_info contains the contents that are usually passed in to the run method
+     * of PMSERunnable
+     * @return bool True if the method was executed and completed without any exceptions. False otherwise.
+     */
+    public function callCustomLogic(SugarBean $b, $namespacedClass, $additional_info)
     {
         if ($b instanceof SugarBean) {
 
@@ -113,12 +125,25 @@ class AWFCustomAction
                 $override_user = $this->retrieveOriginalUserForProcess($additional_info['flowData']['cas_id']);
             }
 
-            if ($this->methodExists($method, $b->module_name)) {
-                try {
-                    return call_user_func_array(array($this, $method), array($b, $override_user, $additional_info));
-                } catch (Exception $e) {
-                    return false;
-                }
+            if (!$this->classIsDefined($namespacedClass, $b->module_name)) {
+                $GLOBALS['log']->fatal("The class exists and is loadable but it was NOT configured for module " .
+                    $b->module_name . " Skipping Execution");
+                return false;
+            }
+
+            //Last check, make sure that the class has an execute method defined
+            if (!method_exists($namespacedClass, "execute")) {
+                $GLOBALS['log']->fatal("Error confirming the $namespacedClass class has an \"execute\" method defined");
+                return false;
+            }
+
+            //cleared all hurdles, go for it and run the "execute" method on the class
+            try {
+                return $namespacedClass::execute($b, $override_user, $additional_info);
+            } catch (Exception $e) {
+                $GLOBALS['log']->fatal("Error executing the \"execute\" method on $namespacedClass. The error is: " .
+                    $e->getMessage());
+                return false;
             }
         }
 
