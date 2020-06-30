@@ -9,4 +9,6 @@ use PMSERunnable;
 interface AWFCustomLogicExecutor extends PMSERunnable
 {
     public function getModules();
+
+    public function getLabelName();
 }
