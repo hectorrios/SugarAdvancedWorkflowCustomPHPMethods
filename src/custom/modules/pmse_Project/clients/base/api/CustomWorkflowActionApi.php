@@ -6,9 +6,12 @@
 // 2017-04-27
 // Tested on Sugar 7.8.2.0
 
+use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomActionRegistry;
+use Sugarcrm\Sugarcrm\DependencyInjection\Container;
+
 if (!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
-SugarAutoLoader::load('custom/modules/pmse_Project/AWFCustomActionLogic.php');
+SugarAutoLoader::load('custom/modules/pmse_Project/AWFCustomAction.php');
 
 class CustomWorkflowActionApi extends SugarApi
 {
@@ -32,17 +35,25 @@ class CustomWorkflowActionApi extends SugarApi
     }
 
     public function getAvailableModulesApis($api, $args) {
-        $AWFCustomActionLogic = new AWFCustomActionLogic();
-        return $AWFCustomActionLogic->getAvailableModulesApis();
+        //Fetch the Custom Action Registry from the container and pass it in
+        //TODO returning an empty array should be temporary and be replaced with an error
+        //if we can't find the Registry in the container
+        if (!Container::getInstance()->has(AWFCustomActionRegistry::class)) {
+            return [];
+        }
+
+        $executorRegistry = Container::getInstance()->get(AWFCustomActionRegistry::class);
+        $awfService = new AWFCustomAction($executorRegistry);
+        return $awfService->getAvailableModulesApis();
     }
 
     public function getAvailableApis($api, $args) {
-
-        if (empty($args['module'])) {
+        if(empty($args['module'])) {
             return array('success' => false);
         }
 
         $AWFCustomActionLogic = new AWFCustomActionLogic();
         return $AWFCustomActionLogic->getAvailableApis($args['module']);
     }
+
 }
