@@ -6,6 +6,8 @@
 // 2017-04-27
 // Tested on Sugar 7.8.2.0
 
+namespace Sugarcrm\Sugarcrm\custom\modules\pmse_Project;
+
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomActionRegistry;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomLogicExecutor;
 use Sugarcrm\Sugarcrm\DependencyInjection\Container;
