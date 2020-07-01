@@ -7,6 +7,7 @@
 // Tested on Sugar 7.8.2.0
 
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomActionRegistry;
+use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomAction;
 use Sugarcrm\Sugarcrm\DependencyInjection\Container;
 
 if (!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
@@ -52,8 +53,9 @@ class CustomWorkflowActionApi extends SugarApi
             return array('success' => false);
         }
 
-        $AWFCustomActionLogic = new AWFCustomActionLogic();
-        return $AWFCustomActionLogic->getAvailableApis($args['module']);
+        $executorRegistry = Container::getInstance()->get(AWFCustomActionRegistry::class);
+        $awfService = new AWFCustomAction($executorRegistry);
+        return $awfService->getAvailableApis($args['module']);
     }
 
 }
