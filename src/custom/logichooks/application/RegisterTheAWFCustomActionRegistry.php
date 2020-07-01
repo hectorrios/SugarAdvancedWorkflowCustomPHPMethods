@@ -14,9 +14,12 @@ class RegisterTheAWFCustomActionRegistry
         $depContainer->set(
             AWFCustomActionRegistry::class,
             function(ContainerInterface $container) {
-                //ignore the Container
-                return new AWFCustomActionRegistry("custom/include/awfactions",
+                //we don't need anything else to wire up
+                $actionRegistry = new AWFCustomActionRegistry("custom/include/awfactions",
                     "Sugarcrm\\Sugarcrm\\custom\\inc\\awfactions");
+                //initialize the Custom Action Registry
+                $actionRegistry->initRegistry();
+                return $actionRegistry;
             }
         );
     }
