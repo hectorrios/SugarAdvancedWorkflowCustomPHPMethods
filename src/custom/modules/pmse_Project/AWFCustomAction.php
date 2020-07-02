@@ -8,9 +8,11 @@
 
 namespace Sugarcrm\Sugarcrm\custom\modules\pmse_Project;
 
+use BeanFactory;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomActionRegistry;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomLogicExecutor;
 use Sugarcrm\Sugarcrm\DependencyInjection\Container;
+use SugarQuery;
 
 class AWFCustomAction
 {
