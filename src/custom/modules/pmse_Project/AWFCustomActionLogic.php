@@ -14,7 +14,8 @@
 // The method customMethodWithOriginalUserOverride, will retrieve the original user that initiated the process and act as that user on this method.
 // This allows the user to put a job in the background using a timer, and still act in behalf of the original user, instead of Admin
 
-SugarAutoLoader::load('custom/modules/pmse_Project/AWFCustomAction.php');
+
+use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomAction;
 
 class AWFCustomActionLogic extends AWFCustomAction
 {
