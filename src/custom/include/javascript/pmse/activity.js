@@ -4,18 +4,42 @@
 // 2017-04-27
 // Tested on Sugar 7.8.2.0
 
-// retrieve the modules on which the action needs to be displayed, just once
-var customWorkflowActionModules = {};
 
-SUGAR.App.api.call('read', SUGAR.App.api.buildURL('customv1/pmse_Project/CrmData/customWorkflowActions'), {}, {
-    success: function(response) {
-        if(response) {
-            customWorkflowActionModules = response;
+(function(app) {
+    // retrieve the modules on which the action needs to be
+    // displayed, just once, after the user has successfully logged in
+
+    AdamActivity.prototype.customWorkflowActionModules = [];
+
+    app.events.on("app:login:success", function(data) {
+         app.logger.debug("initializing the custom workflow action module list");
+
+         app.api.call('read', SUGAR.App.api.buildURL('customv1/pmse_Project/CrmData/customWorkflowActions'), {}, {
+             success: function(response) {
+                 if(response) {
+                     AdamActivity.prototype.customWorkflowActionModules = response;
+                 } else {
+                     app.logger.warn("The response from calling customWorkflowActions " +
+                         "appears to be empty. The response was: " + response);
+                 }
+             },
+             error: function(error){
+                 app.logger.fatal("An error was returned calling: customv1/pmse_Project/CrmData/customWorkflowActions "
+                  + ". The error is: " + error);
+             }
+         });
+     });
+
+    app.events.on('app:logout:success', function(data) {
+        //Clear out the list of modules
+        if (AdamActivity.prototype.customWorkflowActionModules) {
+            AdamActivity.prototype.customWorkflowActionModules = [];
         }
-    },
-    error: function(error){
-    }
-});
+    });
+
+})(SUGAR.App);
+
+
 
 /**
  * Gets custom action context menu addition
@@ -23,7 +47,7 @@ SUGAR.App.api.call('read', SUGAR.App.api.buildURL('customv1/pmse_Project/CrmData
  */
 AdamActivity.prototype.customContextMenuActions = function() {
     // only if allowed, show the item in the menu
-    if(_.indexOf(customWorkflowActionModules, PROJECT_MODULE) >= 0) {
+    if(_.indexOf(AdamActivity.prototype.customWorkflowActionModules, PROJECT_MODULE) >= 0) {
         return [{
             name: 'CALL_CUSTOM_LOGIC',
             text: translate('CALL_CUSTOM_LOGIC') // or SUGAR.App.lang.get('CALL_CUSTOM_LOGIC')
