@@ -22,6 +22,8 @@ class CustomWorkflowActionApi extends SugarApi
                 'reqType' => 'GET',
                 'path' => array('customv1', 'pmse_Project', 'CrmData', 'customWorkflowActions'),
                 'pathVars' => array('', '', '', ''),
+                //set authentication
+                'noLoginRequired' => true,
                 'method' => 'getAvailableModulesApis',
                 'shortHelp' => 'customv1/pmse_Project/CrmData/customWorkflowActions',
             ),
