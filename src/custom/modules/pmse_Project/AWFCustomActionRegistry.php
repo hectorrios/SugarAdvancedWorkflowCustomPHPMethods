@@ -9,6 +9,8 @@ use Sugarcrm\Sugarcrm\DependencyInjection\Container;
 
 class AWFCustomActionRegistry
 {
+    const REGISTRY_CATEGORY = "awfCustomExecutors";
+
     //Collect namespace and module information
     private $registry;
 
@@ -17,17 +19,26 @@ class AWFCustomActionRegistry
 
     private $namespace;
 
+    /* @var $adminConfig \Administration */
+    private $adminConfig;
+
+    private $isRegistryInitialized = false;
+
     /**
      * AWFCustomActionRegistry constructor.
      * @param string $actionDir The relative directory where the Custom Actions are located and which
      * the registry will scan from
      * @param string $namespace The namespace corresponds to the actionDir parameter
+     * @param \Administration $adminConfig
      */
-    public function __construct($actionDir, $namespace)
+    public function __construct($actionDir, $namespace, $adminConfig)
     {
         $this->registry = [];
         $this->actionDir = $actionDir;
         $this->namespace = $namespace;
+        $this->adminConfig = $adminConfig;
+        //Load up just our executors
+        $this->adminConfig->retrieveSettings(self::REGISTRY_CATEGORY);
     }
 
     public function initRegistry()
@@ -77,8 +88,86 @@ class AWFCustomActionRegistry
         }
     }
 
+    public function registerExecutor($containerKey, $overrideExisting = false)
+    {
+        //grab just the classname from the possibly namespaced class
+        $justTheClassName = $this->getJustTheClassName($containerKey);
+
+        $registerAdmin = $this->adminConfig;
+
+        //If the container Key is already present and overrideExisting is NOT true then we don't
+        //need to re-register the key
+        $settingsKey = self::REGISTRY_CATEGORY . "_" . $justTheClassName;
+        if (array_key_exists($settingsKey, $registerAdmin->settings) && !$overrideExisting) {
+            //It's already been registered and we don't want to override it. Just return
+            return;
+        }
+
+        //Otherwise, lets register the Key
+        $registerAdmin->saveSetting(self::REGISTRY_CATEGORY, $justTheClassName, $containerKey);
+    }
+
+    public function initRegistryV2()
+    {
+        //The idea is that each Custom Executor will have registered itself with the
+        //Registry when they are installed. Therefore we need to go and grab them out of the
+        //DB now.
+        $GLOBALS["log"]->fatal("Initiating the Custom Action Registry");
+
+        $container = Container::getInstance();
+        foreach($this->adminConfig->settings as $key => $executorSetting) {
+            $GLOBALS['log']->fatal("Processing Admin Config setting: $executorSetting");
+
+            if (!$this->startsWith($key, self::REGISTRY_CATEGORY)) {
+                continue;
+            }
+
+            if (is_bool($executorSetting)) {
+                continue;
+            }
+
+            $namespaceClass = $executorSetting;
+
+            if (!$container->has($namespaceClass)) {
+                $GLOBALS['log']->fatal("Unable to find a Container entry for $namespaceClass");
+                continue;
+            }
+
+            /* @var $executorInstance AWFCustomLogicExecutor */
+            $executorInstance =  $container->get($namespaceClass);
+
+            if (!($executorInstance instanceof AWFCustomLogicExecutor)) {
+                $GLOBALS['log']->fatal("Container entry with key: $namespaceClass does not " .
+                    "implement the AWFCustomLogicExecutor interface");
+                continue;
+            }
+
+            //Grab the supported modules for this executor
+            $supportedModules = $executorInstance->getModules();
+            //Loop over the modules
+            foreach ($supportedModules as $moduleName) {
+                if (!array_key_exists($moduleName, $this->registry)) {
+                    //add the module to the registry with an empty array
+                    $this->registry[$moduleName] = [];
+                }
+
+                //Add the namespaced class to the registry under this module
+                $this->registry[$moduleName][] = [
+                    "label" => $executorInstance->getLabelName(),
+                    "containerKey" => $namespaceClass
+                ];
+            }
+        }
+
+        $this->isRegistryInitialized = true;
+    }
+
     public function getCustomActionExecutor($module, $classNamespace)
     {
+        if (!$this->isRegistryInitialized) {
+            $this->initRegistryV2();
+        }
+
         //for now, assume that the registry has been initialized.
         if (!array_key_exists($module, $this->registry)) {
             return null;
@@ -100,6 +189,10 @@ class AWFCustomActionRegistry
 
     public function getAvailableModules()
     {
+        if (!$this->isRegistryInitialized) {
+            $this->initRegistryV2();
+        }
+
         return array_keys($this->registry);
     }
 
@@ -117,6 +210,10 @@ class AWFCustomActionRegistry
      */
     public function getAvailableExecutorsForModule($moduleName)
     {
+        if (!$this->isRegistryInitialized) {
+            $this->initRegistryV2();
+        }
+
         if (!array_key_exists($moduleName, $this->registry)) {
             return [];
         }
@@ -128,4 +225,18 @@ class AWFCustomActionRegistry
     {
         return $this->namespace . "\\" . $baseClassName;
     }
+
+    private function getJustTheClassName($namespacedClass)
+    {
+        //split it up
+        $parts = explode("\\", $namespacedClass);
+        return array_pop($parts);
+    }
+
+    private function startsWith ($string, $startString)
+    {
+        $len = strlen($startString);
+        return (substr($string, 0, $len) === $startString);
+    }
+
 }
