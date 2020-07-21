@@ -23,7 +23,6 @@ With the implemented functionality it is possible to find out the originating us
 
 ## Installation
 * Clone the repository and enter the cloned directory
-* Modify the required code on `src/custom/modules/pmse_Project/AWFCustomActionLogic.php`
 * Retrieve the Sugar Module Packager dependency by running either `composer install`
 * Generate the installable .zip Sugar module within the `releases` directory with ``./vendor/bin/package `cat version` ``
 * Install the generated module into the instance
@@ -31,23 +30,36 @@ With the implemented functionality it is possible to find out the originating us
 * Make sure the browser's cache is purged, so that the Advanced Workflow custom action displays
 * Make sure cron is running successfully
 
-## PHP Customisations (This is no longer valid)
-The only class that needs to be customised is located on `custom/modules/pmse_Project/AWFCustomActionLogic.php`.
-The current version of the class, has 3 sample methods that log a fatal message on the sugarcrm.log file.
-Two methods are available for Accounts and one for Contacts.
-The method customMethodWithOriginalUserOverride, will retrieve the original user that initiated the process and act as that user, finally it will restore the user.
-The implemented functionality allows the user to put a job in the background using a timer, and still act in behalf of the original user, instead of Admin.
-
+## The Registry
+The registry class *Sugarcrm\Sugarcrm\modules\pmse_Project\AWFCustomActionRegistry*
+handles the keeping track of all executors that are registered with it. It 
+provides the information to the SugarBPM front-end if there are any executors that
+have been configured for a Process Definition.
+ 
 ## Creating new Strategies
 1. **Very important** create a new namespaced class in **custom/include/awfactions** and
-make sure that it implements the AWFCustomLogicExecutor interface.
+make sure it implements the AWFCustomLogicExecutor interface.
 1a. Implement the methods on the interface. The AWFCustomLogicExecutor has two
 direct methods and inherits the "run" method from PMSERunnable interface. The 
 "run" method is where any custom logic should be placed.
 2. Create an "after_entry_point" logic hook
 2a. The actual hook class should create an entry for the Executor class into
 the DI Container. It is **important** that the key be the FQCN of the class being
-instantiated.
+instantiated. See file *custom/logichooks/application/RegisterTheStarterCustomAction.php* 
+file for an example.
+
+## Example Strategy
+The repo comes with a starter strategy located in **custom/include/awfactions/StarterCustomAction** which
+can be used for quick functionality that you'd like to add to test out the library. The starter custom action
+class gets registered into the Sugar Dependency Container via an after_entry_point logic hook. Additionally, the class
+implements the AWFCustomLogicExecutor interface that was mentioned in the previous section. The hook configuration
+can be found at **custom/Extension/application/Ext/LogicHooks/install_StarterCustomAction_afterEntryPoint.php**.
+The hook class **RegisterTheCustomAction** handles the registration of the Strategy in to the dependency container
+via the **AWFCustomActionRegistry** registry class which is also configured into the Container. The registry keeps
+track of the custom strategies that have been registered via it's **registerExecutor** method. One important function
+it serves is to map the container keys of the strategies so that the registry can know which Strategy should be made
+visible during the configuration of a BPM process. The BPM process definition relies on this so that it can store the
+container key in its definition.
 
 ## Sample Screenshot
 ![Advanced Workflow Sample Screenshot](https://raw.githubusercontent.com/esimonetti/SugarAdvancedWorkflowCustomPHPMethods/master/screenshot.png)
