@@ -19,24 +19,34 @@ class AWFCustomActionRegistry
 
     private $isRegistryInitialized = false;
 
+    /* @var $container \UltraLite\Container\Container */
+    private $container;
+
     /**
      * AWFCustomActionRegistry constructor.
      * @param Administration $adminConfig
+     * @param \UltraLite\Container\Container $container
      */
-    public function __construct($adminConfig)
+    public function __construct($adminConfig, \UltraLite\Container\Container $container)
     {
         $this->registry = [];
+        $this->container = $container;
         $this->adminConfig = $adminConfig;
         //Load up just our executors
         $this->adminConfig->retrieveSettings(self::REGISTRY_CATEGORY);
     }
 
-    public function registerExecutor($containerKey, $overrideExisting = false)
+    public function registerExecutor($containerKey, $callback, $overrideExisting = false)
     {
         //grab just the classname from the possibly namespaced class
         $justTheClassName = $this->getJustTheClassName($containerKey);
 
         $registerAdmin = $this->adminConfig;
+
+        //Put the callback into the DI Container but first make sure it's not already present.
+        if (! ($this->container->has($containerKey))) {
+            $this->container->set($containerKey, $callback);
+        }
 
         //If the container Key is already present and overrideExisting is NOT true then we don't
         //need to re-register the key

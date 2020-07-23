@@ -14,8 +14,12 @@ class RegisterTheAWFCustomActionRegistry
         $depContainer->set(
             AWFCustomActionRegistry::class,
             function(ContainerInterface $container) {
-                //we don't need anything else to wire up
-                return new AWFCustomActionRegistry(new Administration());
+                //Throw an error if the Container is not the
+                //Ultra-Lite Container
+                if (!($container instanceof \UltraLite\Container\Container)) {
+                    throw new Exception("Expecting an instance of the Ultra-Lite Container implementation");
+                }
+                return new AWFCustomActionRegistry(new Administration(), $container);
             }
         );
     }
