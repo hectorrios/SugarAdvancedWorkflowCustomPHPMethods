@@ -16,11 +16,9 @@ class RegisterTheStarterCustomAction
         $depContainer = Container::getInstance();
         /* @var $executorRegistry AWFCustomActionRegistry */
         $executorRegistry = $depContainer->get(AWFCustomActionRegistry::class);
-        //register the Container key (e.g. here the namespace of the class)
+        //register the Container key (e.g. usually the namespace of the class but its not required)
         //with our internal registry
-        $executorRegistry->registerExecutor(StarterCustomAction::class);
-        $depContainer->set(
-            StarterCustomAction::class,
+        $executorRegistry->registerExecutor(StarterCustomAction::class,
             function(ContainerInterface $container) {
                 //we don't need anything else to wire up
                 return new StarterCustomAction();
