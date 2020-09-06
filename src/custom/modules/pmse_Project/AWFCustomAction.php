@@ -30,16 +30,6 @@ class AWFCustomAction
         $this->executorRegistry = $executorRegistry;
     }
 
-//    public function methodExists($method, $module)
-//    {
-//        if (!empty($method) && !empty($module) && !empty($this->availableMethods[$module])) {
-//            if (in_array($method, $this->availableMethods[$module]) && method_exists($this, $method)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     /**
      * Fetch the list of module names that have
      * custom action executors registered against them
@@ -71,7 +61,6 @@ class AWFCustomAction
         }
 
         return $response;
-        //return array('success' => false);
     }
 
     public function impersonateUser($user)
@@ -116,29 +105,4 @@ class AWFCustomAction
 
         return false;
     }
-
-//    public function callCustomLogic(SugarBean $b, $method, $additional_info)
-//    {
-//        if ($b instanceof SugarBean) {
-
-            // retrieve the original user that initiated the process, if there was a timer to push the action in the background
-            // right now there seem to be no way to differentiate if a process is real time if it was sent in the background
-            // logic will have to apply to the executing logic, based on the method called
-
-//            $override_user = null;
-//            if (!empty($additional_info['flowData']['cas_id'])) {
-//                $override_user = $this->retrieveOriginalUserForProcess($additional_info['flowData']['cas_id']);
-//            }
-//
-//            if ($this->methodExists($method, $b->module_name)) {
-//                try {
-//                    return call_user_func_array(array($this, $method), array($b, $override_user, $additional_info));
-//                } catch (Exception $e) {
-//                    return false;
-//                }
-//            }
-//        }
-//
-//        return false;
-//    }
 }

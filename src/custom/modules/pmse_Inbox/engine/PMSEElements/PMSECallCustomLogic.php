@@ -33,16 +33,6 @@ class PMSECallCustomLogic extends PMSEScriptTask
            $executor->run($flowData, $bean, $externalAction, $arguments);
         }
 
-        //==================
-        //if (!empty($method)) {
-        //    $AWFCustomActionLogic->callCustomLogic($bean, $method, array(
-        //        'flowData' => $flowData,
-        //        'bpmnElement' => $bpmnElement,
-        //        'externalAction' => $externalAction,
-        //        'arguments' => $arguments
-        //    ));
-        //}
-
         $flowAction = $externalAction === 'RESUME_EXECUTION' ? 'UPDATE' : 'CREATE';
 
         return $this->prepareResponse($flowData, 'ROUTE', $flowAction);
