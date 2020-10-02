@@ -69,7 +69,7 @@ class AWFCustomActionRegistry
 
         $container = Container::getInstance();
         foreach($this->adminConfig->settings as $key => $executorSetting) {
-            $GLOBALS['log']->fatal("Processing Admin Config setting: $executorSetting");
+            $GLOBALS['log']->debug("Processing Admin Config setting: $executorSetting");
 
             if (!$this->startsWith($key, self::REGISTRY_CATEGORY)) {
                 continue;
