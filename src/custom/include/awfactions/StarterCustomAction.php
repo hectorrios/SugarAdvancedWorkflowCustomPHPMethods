@@ -3,10 +3,11 @@
 
 namespace Sugarcrm\Sugarcrm\custom\inc\awfactions;
 
-
+use Psr\Container\ContainerInterface;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomLogicExecutor;
+use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\ContainerRegisterAction;
 
-class StarterCustomAction implements AWFCustomLogicExecutor
+class StarterCustomAction extends ContainerRegisterAction implements AWFCustomLogicExecutor
 {
     public function getModules()
     {
@@ -30,6 +31,11 @@ class StarterCustomAction implements AWFCustomLogicExecutor
         //The business logic you want to execute when the custom
         //element that has this Action configured executes.
         $GLOBALS['log']->fatal("Executing the Custom Starter Action");
+    }
+
+    public function initializeNewClassInstance(ContainerInterface $container)
+    {
+        return new StarterCustomAction();        
     }
 
 }
