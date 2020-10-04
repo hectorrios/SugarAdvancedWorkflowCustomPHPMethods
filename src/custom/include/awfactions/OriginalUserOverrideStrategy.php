@@ -5,6 +5,8 @@ namespace Sugarcrm\Sugarcrm\custom\inc\awfactions;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomLogicExecutor;
 use BeanFactory;
 use SugarQuery;
+use Sugarcrm\Sugarcrm\Logger\Factory;
+use Psr\Log\LoggerInterface;
 
 
 /**
@@ -20,11 +22,20 @@ use SugarQuery;
 class OriginalUserOverrideStrategy implements AWFCustomLogicExecutor
 {
     private $previousUser;
+    /**
+     * @var AWFCustomLogicExecutor
+     */
     private $executor;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(AWFCustomLogicExecutor $executorToDecorate = null)
     {
         $this->executor = $executorToDecorate;
+        //initialize the logger
+        $logger = Factory::getLogger('custombpm');
     }
 
     /**
@@ -50,7 +61,7 @@ class OriginalUserOverrideStrategy implements AWFCustomLogicExecutor
     public function run($flowData, $bean, $externalAction, $arguments)
     {
         if (empty($flowData['cas_id'])) {
-            $GLOBALS['log']->fatal("key cas_id is not present on the flowData array");
+            $this->logger->alert("key cas_id is not present on the flowData array");
             return;
         }
 
@@ -60,7 +71,7 @@ class OriginalUserOverrideStrategy implements AWFCustomLogicExecutor
             $this->impersonateUser($overrideUser);
         }
 
-        $GLOBALS['log']->debug('called customMethodWithOriginalUserOverride as '
+        $this->logger->debug('called customMethodWithOriginalUserOverride as '
             . $GLOBALS['current_user']->id . ' originally run by ' . $this->previousUser->id);
 
         /*
@@ -74,6 +85,17 @@ class OriginalUserOverrideStrategy implements AWFCustomLogicExecutor
         $this->resetUser();
 
         return;
+    }
+
+    public function setLogger(LoggerInterface $logger = null)
+    {
+        //if no LoggerInterface is provided, then stick with logger configured
+        //when the class instance was initialized.
+        if (empty($logger)) {
+            return;
+        }
+
+        $this->logger = $logger;
     }
 
     private function impersonateUser($user)
@@ -102,20 +124,20 @@ class OriginalUserOverrideStrategy implements AWFCustomLogicExecutor
         $records = $sugarQuery->execute();
         
         if (empty($records) || empty($records['0']) || empty($records['0']['created_by'])) {
-            $GLOBALS['log']->fatal("OriginalUserOverrideStrategy: No results were returned back from the Query");
+            $this->logger->debug("OriginalUserOverrideStrategy: No results were returned back from the Query");
             return null;
         }
         
         $override_user = BeanFactory::getBean('Users', $records['0']['created_by']);
         if (empty($override_user->id)) {
-            $GLOBALS['log']->fatal("OriginalUserOverrideStrategy: No user was found for user with id: "
+            $this->logger->debug("OriginalUserOverrideStrategy: No user was found for user with id: "
                 . $records['0']['created_by']);
             return null;
         }
 
         if ($override_user->id === '1') {
             //if the user that we've searched for is the Admin then forget about it
-            $GLOBALS['log']->fatal("OriginalUserOverrideStrategy: The user we are looking for is the Admin, skip it");
+            $this->logger->debug("OriginalUserOverrideStrategy: The user we are looking for is the Admin, skip it");
             return null;
         } 
 

@@ -6,6 +6,8 @@ namespace Sugarcrm\Sugarcrm\custom\modules\pmse_Project;
 
 use Administration;
 use Sugarcrm\Sugarcrm\DependencyInjection\Container;
+use Sugarcrm\Sugarcrm\Logger\Factory;
+use Psr\Log\LoggerInterface;
 
 class AWFCustomActionRegistry
 {
@@ -22,6 +24,9 @@ class AWFCustomActionRegistry
     /* @var $container \UltraLite\Container\Container */
     private $container;
 
+    /* @var $logger Psr\Log\LoggerInterface */
+    private $logger;
+
     /**
      * AWFCustomActionRegistry constructor.
      * @param Administration $adminConfig
@@ -34,6 +39,8 @@ class AWFCustomActionRegistry
         $this->adminConfig = $adminConfig;
         //Load up just our executors
         $this->adminConfig->retrieveSettings(self::REGISTRY_CATEGORY);
+        
+        $this->logger = Factory::getLogger('custombpm');
     }
 
     public function registerExecutor($containerKey, $callback, $overrideExisting = false)
@@ -69,7 +76,7 @@ class AWFCustomActionRegistry
 
         $container = Container::getInstance();
         foreach($this->adminConfig->settings as $key => $executorSetting) {
-            $GLOBALS['log']->debug("Processing Admin Config setting: $executorSetting");
+            $this->logger->debug("Processing Admin Config setting: $executorSetting");
 
             if (!$this->startsWith($key, self::REGISTRY_CATEGORY)) {
                 continue;
@@ -82,7 +89,7 @@ class AWFCustomActionRegistry
             $namespaceClass = $executorSetting;
 
             if (!$container->has($namespaceClass)) {
-                $GLOBALS['log']->fatal("Unable to find a Container entry for $namespaceClass");
+                $this->logger->debug("Unable to find a Container entry for $namespaceClass");
                 continue;
             }
 
@@ -90,7 +97,7 @@ class AWFCustomActionRegistry
             $executorInstance =  $container->get($namespaceClass);
 
             if (!($executorInstance instanceof AWFCustomLogicExecutor)) {
-                $GLOBALS['log']->fatal("Container entry with key: $namespaceClass does not " .
+                $this->logger->debug("Container entry with key: $namespaceClass does not " .
                     "implement the AWFCustomLogicExecutor interface");
                 continue;
             }

@@ -9,12 +9,22 @@
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomActionRegistry;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomLogicExecutor;
 use Sugarcrm\Sugarcrm\DependencyInjection\Container;
+use Sugarcrm\Sugarcrm\Logger\Factory;
 
 SugarAutoLoader::load('custom/modules/pmse_Project/AWFCustomActionLogic.php');
 SugarAutoLoader::load('modules/pmse_Inbox/engine/PMSEElements/PMSEScriptTask.php');
 
 class PMSECallCustomLogic extends PMSEScriptTask
 {
+    private $logger;
+
+    public function __construct()
+    {
+        //chain up
+        parent::__construct();
+        //initialize the logger
+        $this->logger = Factory::getLogger('custombpm');
+    }
     public function run($flowData, $bean = null, $externalAction = '', $arguments = array())
     {
         /* @var $bean SugarBean */
@@ -51,13 +61,13 @@ class PMSECallCustomLogic extends PMSEScriptTask
         $executorRegistry = $depContainer->get(AWFCustomActionRegistry::class);
 
         if(empty($executorRegistry)) {
-            $GLOBALS['log']->fatal("Could not fetch the Registry...Skipping Execution");
+            $this->logger->debug("Could not fetch the Registry...Skipping Execution");
             return null;
         }
 
         $executor = $executorRegistry->getCustomActionExecutor($moduleName, $executorKey);
         if (empty($executor) || !($executor instanceof AWFCustomLogicExecutor)) {
-            $GLOBALS['log']->fatal("Could not locate the Executor...Skipping Execution");
+            $this->logger->debug("Could not locate the Executor...Skipping Execution");
             return null;
         }
 
