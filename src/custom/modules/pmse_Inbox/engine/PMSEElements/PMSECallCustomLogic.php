@@ -25,10 +25,12 @@ class PMSECallCustomLogic extends PMSEScriptTask
         //initialize the logger
         $this->logger = Factory::getLogger('custombpm');
     }
+
+    /**
+     * @inheritdoc
+     */
     public function run($flowData, $bean = null, $externalAction = '', $arguments = array())
     {
-        /* @var $bean SugarBean */
-
         // retrieve flow settings
         $bpmnElement = $this->retrieveDefinitionData($flowData['bpmn_id']);
 
