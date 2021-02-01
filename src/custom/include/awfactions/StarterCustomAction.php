@@ -44,6 +44,9 @@ class StarterCustomAction extends ContainerRegisterAction implements AWFCustomLo
         $this->logger->debug("Executing the Custom Starter Action");
     }
 
+    /**
+     * @inheritdoc
+     */
     public function initializeNewClassInstance(ContainerInterface $container)
     {
         return new StarterCustomAction();        

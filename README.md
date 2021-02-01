@@ -3,7 +3,9 @@
 # SugarAdvancedWorkflowCustomPHPMethods
 SugarCRM's Advanced Workflow custom PHP actions
 
-## Technical Description
+## Technical Description (Breaking Changes)
+**[Breaking Changes]** Customizations developed using the previous version will need to be re-developed as they will no longer work with this version. 
+
 The purpose of this customisation is to be able to trigger complex PHP actions leveraging Advanced Workflows.
 In order to support both on-premise and SugarCloud, the original version of this customisation has
 been re-architected to leverage the [Strategy pattern](https://refactoring.guru/design-patterns/strategy/php/example).
@@ -32,18 +34,20 @@ With the implemented functionality it is possible to find out the originating us
 
 ## The Registry
 The registry class *Sugarcrm\Sugarcrm\modules\pmse_Project\AWFCustomActionRegistry*
-handles the keeping track of all executors that are registered with it. It 
+keeps track of all executors that are registered with it. It 
 provides the information to the SugarBPM front-end if there are any executors that
-have been configured for a Process Definition.
+have been configured for a module that can be leveraged for any Process Definitions for that module.
  
 ## Creating new Strategies
+Once this library has been installed, creating new logic that can be leveraged in a SugarBPM Process Definition involves the following two steps.
+
 1. **Very important** create a new namespaced class in **custom/include/awfactions** and
 make sure it implements the AWFCustomLogicExecutor interface.
-1a. Implement the methods on the interface. The AWFCustomLogicExecutor has two
+    - Implement the methods on the interface. The AWFCustomLogicExecutor has two
 direct methods and inherits the "run" method from PMSERunnable interface. The 
 "run" method is where any custom logic should be placed.
 2. Create an "after_entry_point" logic hook
-2a. The actual hook class should create an entry for the Executor class into
+    - The actual hook class should create an entry for the Executor class into
 the DI Container. It is **important** that the key be the FQCN of the class being
 instantiated. See file *custom/logichooks/application/RegisterTheStarterCustomAction.php* 
 file for an example.
