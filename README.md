@@ -56,7 +56,9 @@ file for an example.
 The repo comes with a starter strategy located in **custom/include/awfactions/StarterCustomAction** which
 can be used for quick functionality that you'd like to add to test out the library. The starter custom action
 class gets registered into the Sugar Dependency Container via an after_entry_point logic hook. Additionally, the class
-implements the AWFCustomLogicExecutor interface that was mentioned in the previous section. The hook configuration
+implements the AWFCustomLogicExecutor interface that was mentioned in the previous section. 
+
+The hook configuration
 can be found at **custom/Extension/application/Ext/LogicHooks/install_StarterCustomAction_afterEntryPoint.php**.
 The hook class **RegisterTheCustomAction** handles the registration of the Strategy in to the dependency container
 via the **AWFCustomActionRegistry** registry class which is also configured into the Container. The registry keeps
