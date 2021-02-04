@@ -1,5 +1,13 @@
 {
     "require": {
-        "esimonetti/sugar-module-packager": "0.2.2"
+        "esimonetti/sugar-module-packager": "0.2.2",
+        "ultra-lite/container": "6.2.0",
+        "psr/container": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sugarcrm\\Sugarcrm\\custom\\": "src/custom/",
+            "Sugarcrm\\Sugarcrm\\custom\\inc\\": "src/custom/include/"
+        }
     }
 }
