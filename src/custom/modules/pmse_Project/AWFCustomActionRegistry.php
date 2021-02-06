@@ -5,9 +5,9 @@ namespace Sugarcrm\Sugarcrm\custom\modules\pmse_Project;
 
 
 use Administration;
-use Sugarcrm\Sugarcrm\DependencyInjection\Container;
 use Sugarcrm\Sugarcrm\Logger\Factory;
 use Psr\Log\LoggerInterface;
+use Psr\Container\ContainerInterface;
 
 class AWFCustomActionRegistry
 {
@@ -16,46 +16,53 @@ class AWFCustomActionRegistry
     //Collect namespace and module information
     private $registry;
 
-    /* @var $adminConfig Administration */
+    /** @var Administration */
     private $adminConfig;
 
     private $isRegistryInitialized = false;
 
-    /* @var $container \UltraLite\Container\Container */
-    private $container;
-
-    /* @var $logger Psr\Log\LoggerInterface */
+    /** @var LoggerInterface */
     private $logger;
+
+    private $container;
 
     /**
      * AWFCustomActionRegistry constructor.
      * @param Administration $adminConfig
-     * @param \UltraLite\Container\Container $container
      */
-    public function __construct($adminConfig, \UltraLite\Container\Container $container)
+    public function __construct($adminConfig, ContainerInterface $container)
     {
         $this->registry = [];
-        $this->container = $container;
         $this->adminConfig = $adminConfig;
         //Load up just our executors
         $this->adminConfig->retrieveSettings(self::REGISTRY_CATEGORY);
         
         $this->logger = Factory::getLogger('custombpm');
+
+        $this->container = $container;
     }
 
-    public function registerExecutor($containerKey, $callback, $overrideExisting = false)
+    /**
+     * Register new custom action classes, must implement the
+     * @see Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomLogicExecutor
+     * interface. All classes that are registered will be made visible to the
+     * BPM designer when configuring a new "Call Custom Action" BPM Action
+     * element. The registry is also needed to call-up the Custom Action when the custom action 
+     * needs to execute in the BPM process.
+     * 
+     * @param string $customActionClass Is the fully-qualified classname of the custom action to be
+     * registered.
+     * @param bool $overrideExisting flag indicating whether or not re-register a class that already
+     * exists in the registry
+     */
+    public function registerCustomAction($customActionClass, $overrideExisting = false)
     {
         //grab just the classname from the possibly namespaced class
-        $justTheClassName = $this->getJustTheClassName($containerKey);
+        $justTheClassName = $this->getJustTheClassName($customActionClass);
 
         $registerAdmin = $this->adminConfig;
 
-        //Put the callback into the DI Container but first make sure it's not already present.
-        if (! ($this->container->has($containerKey))) {
-            $this->container->set($containerKey, $callback);
-        }
-
-        //If the container Key is already present and overrideExisting is NOT true then we don't
+        //If the class is already present and overrideExisting is NOT true then we don't
         //need to re-register the key
         $settingsKey = self::REGISTRY_CATEGORY . "_" . $justTheClassName;
         if (array_key_exists($settingsKey, $registerAdmin->settings) && !$overrideExisting) {
@@ -64,7 +71,7 @@ class AWFCustomActionRegistry
         }
 
         //Otherwise, lets register the Key
-        $registerAdmin->saveSetting(self::REGISTRY_CATEGORY, $justTheClassName, $containerKey);
+        $registerAdmin->saveSetting(self::REGISTRY_CATEGORY, $justTheClassName, $customActionClass);
     }
 
     public function initRegistry()
@@ -122,13 +129,12 @@ class AWFCustomActionRegistry
         $this->isRegistryInitialized = true;
     }
 
-    public function getCustomActionExecutor($module, $classNamespace)
+    public function getCustomAction($module, $classNamespace)
     {
         if (!$this->isRegistryInitialized) {
             $this->initRegistry();
         }
 
-        //for now, assume that the registry has been initialized.
         if (!array_key_exists($module, $this->registry)) {
             return null;
         }
@@ -144,6 +150,7 @@ class AWFCustomActionRegistry
             return null;
         }
 
+        //We have it. Can we instantiate the class and return it?
         return Container::getInstance()->get($classNamespace);
     }
 
