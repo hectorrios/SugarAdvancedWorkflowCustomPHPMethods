@@ -8,6 +8,7 @@ use Administration;
 use Sugarcrm\Sugarcrm\Logger\Factory;
 use Psr\Log\LoggerInterface;
 use Psr\Container\ContainerInterface;
+use Sugarcrm\Sugarcrm\DependencyInjection\Container;
 
 class AWFCustomActionRegistry
 {
@@ -61,6 +62,13 @@ class AWFCustomActionRegistry
         $justTheClassName = $this->getJustTheClassName($customActionClass);
 
         $registerAdmin = $this->adminConfig;
+
+        /*
+        //Put the callback into the DI Container but first make sure it's not already present.
+        if (! ($this->container->has($containerKey))) {
+            $this->container->set($containerKey, $callback);
+        }
+        */
 
         //If the class is already present and overrideExisting is NOT true then we don't
         //need to re-register the key

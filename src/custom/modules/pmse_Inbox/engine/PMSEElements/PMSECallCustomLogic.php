@@ -16,7 +16,7 @@ SugarAutoLoader::load('modules/pmse_Inbox/engine/PMSEElements/PMSEScriptTask.php
 
 class PMSECallCustomLogic extends PMSEScriptTask
 {
-    private $logger;
+    //private $logger;
 
     public function __construct()
     {
@@ -59,7 +59,7 @@ class PMSECallCustomLogic extends PMSEScriptTask
         $depContainer = Container::getInstance();
 
         //Grab the registry
-        /* @var $executorRegistry AWFCustomActionRegistry */
+        /** @var AWFCustomActionRegistry */
         $executorRegistry = $depContainer->get(AWFCustomActionRegistry::class);
 
         if(empty($executorRegistry)) {
@@ -67,7 +67,7 @@ class PMSECallCustomLogic extends PMSEScriptTask
             return null;
         }
 
-        $executor = $executorRegistry->getCustomActionExecutor($moduleName, $executorKey);
+        $executor = $executorRegistry->getCustomAction($moduleName, $executorKey);
         if (empty($executor) || !($executor instanceof AWFCustomLogicExecutor)) {
             $this->logger->debug("Could not locate the Executor...Skipping Execution");
             return null;

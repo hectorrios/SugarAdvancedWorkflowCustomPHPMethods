@@ -1,15 +1,15 @@
 <?php
 
-use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomActionRegistry;
 use Psr\Container\ContainerInterface;
+use Sugarcrm\Sugarcrm\custom\inc\awfactions\StarterCustomAction;
+use Sugarcrm\Sugarcrm\Logger\Factory;
 
 return [
-    AWFCustomActionRegistry::class => function(ContainerInterface $container) {
-        //Throw an error if the Container is not the
-        //Ultra-Lite Container
-        if (!($container instanceof \UltraLite\Container\Container)) {
-            throw new Exception("Expecting an instance of the Ultra-Lite Container implementation");
-        }
-        return new AWFCustomActionRegistry(new Administration(), $container);
+    "customBPMLogger" => function(ContainerInterface $container) {
+        return Factory::getLogger('custombpm'); 
+    },
+    StarterCustomAction::class => function (ContainerInterface $container) {
+        $logger = $container->get("customBPMLogger");
+        return new StarterCustomAction($logger);
     },
 ];

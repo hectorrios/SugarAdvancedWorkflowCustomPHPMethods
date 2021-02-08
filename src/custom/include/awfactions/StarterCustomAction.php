@@ -9,7 +9,7 @@ use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\ContainerRegisterAction;
 use Psr\Log\LoggerInterface;
 use Sugarcrm\Sugarcrm\Logger\Factory;
 
-class StarterCustomAction extends ContainerRegisterAction implements AWFCustomLogicExecutor
+class StarterCustomAction implements AWFCustomLogicExecutor
 {
     public function __construct(LoggerInterface $logger = null)
     {
@@ -52,7 +52,7 @@ class StarterCustomAction extends ContainerRegisterAction implements AWFCustomLo
         return new StarterCustomAction();        
     }
 
-    public function setLogger(LoggerInterface $logger = null)
+    private function setLogger(LoggerInterface $logger = null)
     {
         //if no LoggerInterface is present, then we will
         //fallback to the Default channel
