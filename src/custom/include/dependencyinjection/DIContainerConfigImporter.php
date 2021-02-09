@@ -41,13 +41,16 @@ class DIContainerConfigImporter
      */
     public function load(string $baseDir = "")
     {
+        $this->logger->debug("The realpath of the baseDir: $baseDir is: " . realpath($baseDir));
+        
         //is the baseDir an actual dir? Use a Directory Iterator.
         //For the moment, let an exception halt Execution!
-        $dirIter = new DirectoryIterator($baseDir);
-        if (! $dirIter->isDir()) {
+        if (! sugar_is_dir($baseDir)) {
             //throw an Exception
             throw new UnexpectedValueException("The directory: " . $baseDir . " is not a directory.");
         }
+
+        $dirIter = new DirectoryIterator($baseDir);
 
         //Loop over each file in the directory and pass it to the Container to load.
         foreach ($dirIter as $fileInfo) {
@@ -69,18 +72,19 @@ class DIContainerConfigImporter
 
     protected function configureFromFile($filepath)
     {
+        //Before loading any file check to mae sure we have the 
+        //type of Container we need
+        if (!($this->container instanceof Container)) {
+            throw new \Exception("The local instance of container needs to be UltraLite/Container");
+        }
+
         foreach (require $filepath as $serviceKey => $serviceFactory) {
             //register the service key (class) with the Registry which is a separate
             //registration than the registration with the Container
             $this->registry->registerCustomAction($serviceKey);
 
             //Now register the factory with the container
-            if ($this->container instanceof Container) {
-                $this->container->set($serviceKey, $serviceFactory);
-                return;
-            }
-
-            throw new \Exception("The local instance of container needs to be UltraLite/Container");
+            $this->container->set($serviceKey, $serviceFactory);
         }
     }
 

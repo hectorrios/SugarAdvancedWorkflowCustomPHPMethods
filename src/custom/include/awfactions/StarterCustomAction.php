@@ -5,7 +5,6 @@ namespace Sugarcrm\Sugarcrm\custom\inc\awfactions;
 
 use Psr\Container\ContainerInterface;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomLogicExecutor;
-use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\ContainerRegisterAction;
 use Psr\Log\LoggerInterface;
 use Sugarcrm\Sugarcrm\Logger\Factory;
 

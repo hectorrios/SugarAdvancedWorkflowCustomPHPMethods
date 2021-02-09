@@ -5,7 +5,6 @@ namespace Sugarcrm\Sugarcrm\custom\modules\pmse_Project;
 
 
 use Administration;
-use Sugarcrm\Sugarcrm\Logger\Factory;
 use Psr\Log\LoggerInterface;
 use Psr\Container\ContainerInterface;
 use Sugarcrm\Sugarcrm\DependencyInjection\Container;
@@ -31,14 +30,14 @@ class AWFCustomActionRegistry
      * AWFCustomActionRegistry constructor.
      * @param Administration $adminConfig
      */
-    public function __construct($adminConfig, ContainerInterface $container)
+    public function __construct($adminConfig, ContainerInterface $container, LoggerInterface $logger)
     {
         $this->registry = [];
         $this->adminConfig = $adminConfig;
         //Load up just our executors
         $this->adminConfig->retrieveSettings(self::REGISTRY_CATEGORY);
         
-        $this->logger = Factory::getLogger('custombpm');
+        $this->logger = $logger; 
 
         $this->container = $container;
     }
@@ -87,7 +86,7 @@ class AWFCustomActionRegistry
         //The idea is that each Custom Executor will have registered itself with the
         //Registry when they are installed. Therefore we need to go and grab them out of the
         //DB now.
-        $GLOBALS["log"]->fatal("Initiating the Custom Action Registry");
+        $this->logger->info("Initiating the Custom Action Registry");
 
         $container = Container::getInstance();
         foreach($this->adminConfig->settings as $key => $executorSetting) {

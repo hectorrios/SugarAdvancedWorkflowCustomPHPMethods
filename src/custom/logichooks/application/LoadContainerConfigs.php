@@ -6,6 +6,8 @@ use Psr\Container\ContainerInterface;
 use Sugarcrm\Sugarcrm\custom\inc\dependencyinjection\DIContainerConfigImporter;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomActionRegistry;
 use Sugarcrm\Sugarcrm\DependencyInjection\Container;
+use Psr\Log\LoggerInterface;
+use Sugarcrm\Sugarcrm\Logger\Factory;
 
 class LoadContainerConfigs
 {
@@ -19,13 +21,10 @@ class LoadContainerConfigs
     {
         $GLOBALS['log']->info('Calling method loadConfigs');
 
-        //IMPORTANT: The Registry must be registered into the container first and then the
-        //importer 
-        $this->registerTheRegistry();
-        $this->registerTheImporter();
-
-        /** @var ContainerInterface */
+        /** @var Container */
         $diContainer = Container::getInstance();
+
+        $this->registerBaseLineEntities($diContainer);
 
         $importer = $diContainer->get(DIContainerConfigImporter::class);
         $importer->load("custom/include/bpmactions/registry/config");
@@ -33,9 +32,23 @@ class LoadContainerConfigs
         $GLOBALS['log']->info('Done calling method loadConfigs');
     }
 
-    private function registerTheRegistry() 
+
+    private function registerBaseLineEntities(Container $diContainer)
     {
-        $diContainer = Container::getInstance();
+        $this->registerLoggerChannel($diContainer);
+        $this->registerTheRegistry($diContainer);
+        $this->registerTheImporter($diContainer);
+    }
+
+    private function registerLoggerChannel(Container $diContainer)
+    {
+        $diContainer->set("customBPMLogger", function(ContainerInterface $container) {
+            return Factory::getLogger('custombpm'); 
+        });
+    }
+
+    private function registerTheRegistry(Container $diContainer) 
+    {
         $diContainer->set(AWFCustomActionRegistry::class, function(ContainerInterface $container) {
             //Throw an error if the Container is not the
             //Ultra-Lite Container
@@ -46,9 +59,8 @@ class LoadContainerConfigs
         });
     }
 
-    private function registerTheImporter()
+    private function registerTheImporter(Container $diContainer)
     {
-        $diContainer = Container::getInstance();
         $diContainer->set(DIContainerConfigImporter::class, function(ContainerInterface $container) {
             /** @var AWFCustomActionRegistry */
             $registry = $container->get(AWFCustomActionRegistry::class);
@@ -58,4 +70,5 @@ class LoadContainerConfigs
             return $importer;
         });
     }
+
 }
