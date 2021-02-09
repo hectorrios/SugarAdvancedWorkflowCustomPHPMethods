@@ -41,8 +41,6 @@ class DIContainerConfigImporter
      */
     public function load(string $baseDir = "")
     {
-        $this->logger->debug("The realpath of the baseDir: $baseDir is: " . realpath($baseDir));
-        
         //is the baseDir an actual dir? Use a Directory Iterator.
         //For the moment, let an exception halt Execution!
         if (! sugar_is_dir($baseDir)) {

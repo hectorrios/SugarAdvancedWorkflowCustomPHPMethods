@@ -5,9 +5,10 @@ namespace Sugarcrm\Sugarcrm\custom\logichooks\application;
 use Psr\Container\ContainerInterface;
 use Sugarcrm\Sugarcrm\custom\inc\dependencyinjection\DIContainerConfigImporter;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomActionRegistry;
-use Sugarcrm\Sugarcrm\DependencyInjection\Container;
+use Sugarcrm\Sugarcrm\DependencyInjection\Container as ContainerSingleton;
 use Psr\Log\LoggerInterface;
 use Sugarcrm\Sugarcrm\Logger\Factory;
+use UltraLite\Container\Container;
 
 class LoadContainerConfigs
 {
@@ -22,7 +23,7 @@ class LoadContainerConfigs
         $GLOBALS['log']->info('Calling method loadConfigs');
 
         /** @var Container */
-        $diContainer = Container::getInstance();
+        $diContainer = ContainerSingleton::getInstance();
 
         $this->registerBaseLineEntities($diContainer);
 
@@ -55,7 +56,9 @@ class LoadContainerConfigs
             if (!($container instanceof \UltraLite\Container\Container)) {
                 throw new \Exception("Expecting an instance of the Ultra-Lite Container implementation");
             }
-            return new AWFCustomActionRegistry(new \Administration(), $container);
+
+            $logger = $container->get("customBPMLogger");
+            return new AWFCustomActionRegistry(new \Administration(), $container, $logger);
         });
     }
 
