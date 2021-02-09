@@ -7,7 +7,7 @@ require_once "modules/Configurator/Configurator.php";
 $configuratorObj = new Configurator();
 $configuratorObj->loadConfig();
 //['logger']['channels']['channel1']['level']
-$configuratorObj->config['logger']['channels']['custombpm']['level'] = 'debug';
+$configuratorObj->config['logger']['channels']['custombpm']['level'] = 'info';
 $configuratorObj->saveConfig();
 
 // outputting manual repair info
