@@ -35,7 +35,8 @@ This means that any previously developed Custom Action PHP *methods* need to be 
 Sometimes, because of cached files, the installation might appear to not have worked. Primarily this will apply to the javascript that is run within the SugarBPM designer. The module-loadable-package extends the SugarBPM class
 *AdamActivity* prototype to add an array called *customWorkflowActionModules* and this array is populated once a user logs into Sugar. By default, the array will have the modules "Accounts", "Contacts", and "Leads". As a troubleshooting tip, the array can be examined to make sure it's been populated. Using Chrome DevTools console to examine the *AdamActivity* prototype you can verify if the array is present and if it contains any values.
 
-*[Insert Screenshot Here]*
+
+![AdamActivity Prototype](https://raw.githubusercontent.com/hectorrios/SugarAdvancedWorkflowCustomPHPMethods/add_custom_logic_executor_interface/prototype.png)
 
 ## How it works
 Once installed, the customization will inform the BPM Designer if there is custom functionality 
@@ -43,11 +44,11 @@ available for the current BPM flow module. If so, then an extra option will
 be available on the *Action Type* context menu. It will appear at the bottom and will read 
 "Call Custom Logic".
 
-*[Insert screenshot here]*
+![Call Custom Logic menu](https://raw.githubusercontent.com/hectorrios/SugarAdvancedWorkflowCustomPHPMethods/add_custom_logic_executor_interface/call_custom_logic_menu.png)
 
 Selecting the "Call Custom Logic" option will enable a dropdown that available in the "Settings" context menu. The dropdown will have a list of custom Actions that can be run when this BPM action is executed.
 
-*[Insert screenshot here]*
+![Call Custom Settings](https://raw.githubusercontent.com/hectorrios/SugarAdvancedWorkflowCustomPHPMethods/add_custom_logic_executor_interface/custom_action_dropdown.png)
 
 ## Creating new custom actions
 Once this library has been installed, creating new logic that can be leveraged in a SugarBPM Process Definition involves the following two steps.
