@@ -46,7 +46,7 @@ be available on the *Action Type* context menu. It will appear at the bottom and
 
 ![Call Custom Logic menu](https://raw.githubusercontent.com/hectorrios/SugarAdvancedWorkflowCustomPHPMethods/add_custom_logic_executor_interface/call_custom_logic_menu.png)
 
-Selecting the "Call Custom Logic" option will enable a dropdown that available in the "Settings" context menu. The dropdown will have a list of custom Actions that can be run when this BPM action is executed.
+Selecting the "Call Custom Logic" option will enable a dropdown that will be visible in the "Settings" context menu. The dropdown will have a list of custom Actions that are available to this Action BPM element.
 
 ![Call Custom Settings](https://raw.githubusercontent.com/hectorrios/SugarAdvancedWorkflowCustomPHPMethods/add_custom_logic_executor_interface/custom_action_dropdown.png)
 
