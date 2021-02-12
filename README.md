@@ -77,6 +77,9 @@ return [
     },
 ];
 ```
+**Best Practice Recommendation:**
+The suggestion is to leverage custom job queues for PHP intensive methods, and send jobs to the background by using timers wherever possible.
+With the implemented functionality it is possible to find out the originating user of the call, so that it is a possibility to act on behalf of that user if required.
 
 ## Default custom action
 The repo comes with a starter custom action located in **custom/include/awfactions/StarterCustomAction** which
@@ -90,7 +93,7 @@ In order to help with developing any custom BPM actions, a dedicated PSR-3 logge
 configured. The channel name is **custombpm** and default logging level has been set to **info**. Once
 installed, the logging level can be adjusted in the **config_override.php** file.
 It has also been registered into the DI Container so that it is available to any custom actions. In the
-code block above, the **Starter Action** is injectedn with the Logger when it is instantiated by the Container.
+code block above, the **Starter Action** is injected with the Logger when it is instantiated by the Container.
 The key for the Logger is **customBPMLogger**
 
 ## The Registry
@@ -99,8 +102,5 @@ keeps track of all actions that are registered with it. It provides the informat
 designer if there are any custom actions that have been configured for a module that can be
 leveraged for any BPM flow definitions for that module.
 
-**Best Practice Recommendation:**
-The suggestion is to leverage custom job queues for PHP intensive methods, and send jobs to the background by using timers wherever possible.
-With the implemented functionality it is possible to find out the originating user of the call, so that it is a possibility to act on behalf of that user if required.
 
 
