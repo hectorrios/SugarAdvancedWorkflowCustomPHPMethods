@@ -22,13 +22,11 @@ use Psr\Log\LoggerInterface;
 class OriginalUserOverrideStrategy implements AWFCustomLogicExecutor
 {
     private $previousUser;
-    /**
-     * @var AWFCustomLogicExecutor
-     */
+
+    /** @var AWFCustomLogicExecutor */
     private $executor;
-    /**
-     * @var LoggerInterface
-     */
+
+    /** @var LoggerInterface */
     private $logger;
 
     public function __construct(AWFCustomLogicExecutor $executorToDecorate = null)
