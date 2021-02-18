@@ -12,9 +12,13 @@ use UltraLite\Container\Container;
 
 class LoadContainerConfigs
 {
-
+    private const CUSTOM_ACTION_CONFIG_DIR = "custom/include/bpmactions/registry/config";
     /**
-    *
+    * loadConfigs is an after_entry_point logic hook that levergages the
+    * DI Container to wireup all baseline entities (Registry, Logger Channel, and Importer)
+    * and uses the Importer to load any Custom Actions that are present in the 
+    * custom/include/bpmactions/registry/config directory.
+
     * @param $event the after_entry_point event
     * @param $arguments Array containing some arguments
     */
@@ -28,7 +32,7 @@ class LoadContainerConfigs
         $this->registerBaseLineEntities($diContainer);
 
         $importer = $diContainer->get(DIContainerConfigImporter::class);
-        $importer->load("custom/include/bpmactions/registry/config");
+        $importer->load(self::CUSTOM_ACTION_CONFIG_DIR);
 
         $GLOBALS['log']->info('Done calling method loadConfigs');
     }
