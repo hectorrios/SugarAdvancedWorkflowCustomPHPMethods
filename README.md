@@ -8,7 +8,7 @@ SugarCRM SugarBPM custom PHP actions
 
 The purpose of this customisation is to be able to trigger complex PHP actions leveraging SugarBPM.
 It does this by exposing a generic BPM Action component that allows a BPM flow designer to add custom backend functionality into a BPM flow. In the screenshot below, custom functionality has been introduced 
-into sample flow at twom points.
+into sample flow at two points.
 
 ![Advanced Workflow Sample Screenshot](https://raw.githubusercontent.com/esimonetti/SugarAdvancedWorkflowCustomPHPMethods/master/screenshot.png)
 
@@ -32,7 +32,7 @@ This means that any previously developed Custom Action PHP *methods* need to be 
 * Make sure cron is running successfully
 
 ## Quick check to make sure installation worked
-Sometimes, because of cached files, the installation might appear to not have worked. Primarily this will apply to the javascript that is run within the SugarBPM designer. The module-loadable-package extends the SugarBPM class
+Sometimes, because of cached files, the installation might appear to not have worked. Primarily this will apply to the custom javascript that is run within the SugarBPM designer. The module-loadable-package extends the SugarBPM class
 *AdamActivity* prototype to add an array called *customWorkflowActionModules* and this array is populated once a user logs into Sugar. By default, the array will have the modules "Accounts", "Contacts", and "Leads". As a troubleshooting tip, the array can be examined to make sure it's been populated. Using Chrome DevTools console to examine the *AdamActivity* prototype you can verify if the array is present and if it contains any values.
 
 
@@ -54,7 +54,7 @@ Selecting the "Call Custom Logic" option will enable a dropdown that will be vis
 Once this library has been installed, creating new logic that can be leveraged in a SugarBPM Process Definition involves the following two steps.
 
 1. Create a new namespaced class and
-make sure it implements the AWFCustomLogicExecutor interface.
+make sure it implements the **AWFCustomLogicExecutor** interface.
     - Implement the methods on the interface. The AWFCustomLogicExecutor has two
 direct methods and inherits the "run" method from PMSERunnable interface. The 
 "run" method is where custom logic should be placed.
