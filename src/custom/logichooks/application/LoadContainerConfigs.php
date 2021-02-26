@@ -7,6 +7,7 @@ use Sugarcrm\Sugarcrm\custom\inc\dependencyinjection\DIContainerConfigImporter;
 use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomActionRegistry;
 use Sugarcrm\Sugarcrm\DependencyInjection\Container as ContainerSingleton;
 use Psr\Log\LoggerInterface;
+use Sugarcrm\Sugarcrm\custom\modules\pmse_Project\AWFCustomAction;
 use Sugarcrm\Sugarcrm\Logger\Factory;
 use UltraLite\Container\Container;
 
@@ -43,6 +44,7 @@ class LoadContainerConfigs
         $this->registerLoggerChannel($diContainer);
         $this->registerTheRegistry($diContainer);
         $this->registerTheImporter($diContainer);
+        $this->registerTheAWFCustomAction($diContainer);
     }
 
     private function registerLoggerChannel(Container $diContainer)
@@ -75,6 +77,15 @@ class LoadContainerConfigs
             $importer->setLogger($container->get(LoggerInterface::class));
             
             return $importer;
+        });
+    }
+
+    private function registerTheAWFCustomAction(Container $diContainer)
+    {
+        $diContainer->set(AWFCustomAction::class, function(ContainerInterface $container) {
+            $caRegistry = $container->get(AWFCustomActionRegistry::class);
+            $awfCustomAction = new AWFCustomAction($caRegistry);
+            return $awfCustomAction;
         });
     }
 

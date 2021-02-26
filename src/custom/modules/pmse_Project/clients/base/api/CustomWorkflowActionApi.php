@@ -38,15 +38,17 @@ class CustomWorkflowActionApi extends SugarApi
     }
 
     public function getAvailableModulesApis($api, $args) {
-        //Fetch the Custom Action Registry from the container and pass it in
-        //TODO returning an empty array should be temporary and be replaced with an error
-        //if we can't find the Registry in the container
-        if (!Container::getInstance()->has(AWFCustomActionRegistry::class)) {
-            return [];
+        //If we can't find the Service then the uncaught Exception
+        //will bubble up but we'll also put something in the log to help
+        //with troubleshooting issues as this will occur from the BPM designer.        
+        try {
+            /** @var AWFCustomAction */
+            $awfService = Container::getInstance()->get(AWFCustomAction::class);
+        }catch(Exception $e) {
+            $GLOBALS['log']->fatal("Custom BPM Actions error. " . $e->getMessage());
+            throw $e;
         }
 
-        $executorRegistry = Container::getInstance()->get(AWFCustomActionRegistry::class);
-        $awfService = new AWFCustomAction($executorRegistry);
         return $awfService->getAvailableModulesApis();
     }
 
