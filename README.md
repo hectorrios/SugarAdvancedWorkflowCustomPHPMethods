@@ -59,8 +59,8 @@ make sure it implements the **AWFCustomLogicExecutor** interface.
 direct methods and inherits the "run" method from PMSERunnable interface. The 
 "run" method is where custom logic should be placed.
 2. Create the DI Container config file. It MUST be placed in the **custom/include/bpmactions/registry/config**
-directory. The array contains the instantiation logic for the custom action. Since, dynamically 
-instantiating classes, we leverage the DI Container that ships with Sugar and let it 
+directory. The array contains the instantiation logic for the custom action. Since dynamically 
+instantiating classes are not supported in SugarCloud, we leverage the DI Container that ships with Sugar and let it 
 instantiate classes for us. However, we need to tell the Container how it should instantiate the class. 
 **Very Important** The key for the custom action must be the fully qualified class name.
 Below is an example from the included *StarterCustomAction* registry file.
