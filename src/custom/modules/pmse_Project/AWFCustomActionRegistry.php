@@ -62,13 +62,6 @@ class AWFCustomActionRegistry
 
         $registerAdmin = $this->adminConfig;
 
-        /*
-        //Put the callback into the DI Container but first make sure it's not already present.
-        if (! ($this->container->has($containerKey))) {
-            $this->container->set($containerKey, $callback);
-        }
-        */
-
         //If the class is already present and overrideExisting is NOT true then we don't
         //need to re-register the key
         $settingsKey = self::REGISTRY_CATEGORY . "_" . $justTheClassName;

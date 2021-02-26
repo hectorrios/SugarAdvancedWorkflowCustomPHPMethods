@@ -9,6 +9,11 @@ use UnexpectedValueException;
 use UltraLite\Container\Container;
 use Psr\Log\LoggerInterface;
 
+/**
+ * DIContainerConfigImporter imports DI container configurations for Custom Actions
+ * into the OOTB DI Container and simulataneously registers the Custom Action with the 
+ * Custom Action registry.
+ */
 class DIContainerConfigImporter
 {
     /** @var ContainerInterface */
@@ -53,12 +58,8 @@ class DIContainerConfigImporter
         //Loop over each file in the directory and pass it to the Container to load.
         foreach ($dirIter as $fileInfo) {
             if ($fileInfo->isDot()) continue;
-            //pass the filename to our container
             //log out the Pathname.
             $GLOBALS['log']->debug("Loading AWF custom action configs. The pathname is: " . $fileInfo->getPathname());
-            //check if our internal container reference is an Ultra-lite 
-            //container and if so, then delegate to it.
-            
             $this->configureFromFile($fileInfo->getPathname());
         }
     }
