@@ -57,7 +57,8 @@ class AWFCustomActionRegistry
      */
     public function registerCustomAction($customActionClass, $overrideExisting = false)
     {
-        //grab just the classname from the possibly namespaced class
+        //grab just the classname from the possibly namespaced class because the whole
+        //string would be too long to save in the Config table key column.
         $justTheClassName = $this->getJustTheClassName($customActionClass);
 
         $registerAdmin = $this->adminConfig;
