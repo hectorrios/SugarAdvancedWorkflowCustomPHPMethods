@@ -17,11 +17,7 @@ $installdefs['language'] = array(
 
 $installdefs['hookdefs'] = array(
     array(
-        'from' => '<basepath>/custom/Extension/application/Ext/LogicHooks/install_AWFRegistry_afterEntryPoint.php',
-        'to_module' => 'application',
-    ),
-    array(
-        'from' => '<basepath>/custom/Extension/application/Ext/LogicHooks/install_StarterCustomAction_afterEntryPoint.php',
+        'from' => '<basepath>/custom/Extension/application/Ext/LogicHooks/install.LoadContainerConfigs.php',
         'to_module' => 'application',
     ),
 );
